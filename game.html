@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>氣象大富翁 - 教育版</title>
+    <style>
+        :root {
+            --primary: #0055A4;
+            --secondary: #E3F2FD;
+            --accent: #FFD700;
+            --white: #FFFFFF;
+            --bg: #f0f2f5;
+        }
+
+        * { box-sizing: border-box; font-family: "Microsoft JhengHei", sans-serif; }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* 主容器：固定高度，橫向佈局 */
+        #game-app {
+            width: 95vw;
+            max-width: 900px;
+            height: 580px; /* 確保在 600px 以內 */
+            background: var(--white);
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* 標題欄 */
+        .game-header {
+            background: var(--primary);
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .game-header h1 { margin: 0; font-size: 1.2rem; }
+
+        /* 主要遊戲區域：橫向 */
+        .game-main {
+            flex: 1;
+            display: flex;
+            padding: 15px;
+            gap: 20px;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        /* 左側地圖：固定正方形 */
+        #board {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(4, 1fr);
+            gap: 4px;
+            width: 420px;
+            height: 420px;
+            position: relative;
+            background: #eee;
+            padding: 4px;
+            border-radius: 8px;
+        }
+
+        .cell {
+            background: white;
+            border-radius: 4px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.8rem;
+            text-align: center;
+            padding: 2px;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+        }
+        .cell.knowledge { background: #e1f5fe; border-color: #b3e5fc; }
+        .cell.chance { background: #fff3e0; border-color: #ffe0b2; }
+        .cell.start { background: #fff59d; font-weight: bold; border-color: #fbc02d; }
+
+        /* 棋子 */
+        #player {
+            width: 24px;
+            height: 24px;
+            background: #ff5252;
+            border: 2px solid white;
+            border-radius: 50%;
+            position: absolute;
+            z-index: 10;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        /* 右側面板 */
+        .side-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            height: 100%;
+            max-width: 300px;
+        }
+
+        .stat-card {
+            background: var(--secondary);
+            padding: 12px;
+            border-radius: 8px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+        .stat-item { font-weight: bold; color: var(--primary); }
+
+        .control-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: #f9f9f9;
+            border-radius: 8px;
+            border: 1px dashed #ccc;
+        }
+
+        .dice-display {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+
+        /* 按鈕 */
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 20px;
+            font-size: 1rem;
+            cursor: pointer;
+            width: 80%;
+        }
+        .btn:disabled { background: #ccc; cursor: not-allowed; }
+
+        /* 彈窗優化 */
+        .modal {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+        .modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            width: 85%;
+            max-width: 400px;
+            text-align: center;
+        }
+        .option-btn {
+            display: block; width: 100%;
+            padding: 8px; margin: 8px 0;
+            border: 1.5px solid var(--primary);
+            border-radius: 6px;
+            background: white;
+            cursor: pointer;
+        }
+
+        /* 難度遮罩 */
+        #difficulty-screen {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--white);
+            z-index: 200;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        @media (max-width: 768px) {
+            #game-app { height: auto; max-height: none; }
+            .game-main { flex-direction: column; overflow-y: auto; }
+            #board { width: 300px; height: 300px; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-app">
+    <!-- 難度選擇 -->
+    <div id="difficulty-screen">
+        <h2 style="color:var(--primary)">氣象大富翁</h2>
+        <p>請選擇挑戰難度</p>
+        <button class="btn" style="margin-bottom:10px" onclick="startGame('easy')">簡易版 (生活常識)</button>
+        <button class="btn" style="background:#003366" onclick="startGame('hard')">挑戰版 (氣象百科)</button>
+    </div>
+
+    <div class="game-header">
+        <h1>氣象小學堂</h1>
+        <div id="timer-box">剩餘時間: <span id="timer">180</span>s</div>
+    </div>
+
+    <div class="game-main">
+        <!-- 左側地圖 -->
+        <div id="board">
+            <div id="player"></div>
+            <!-- JS 動態生成格子 -->
+        </div>
+
+        <!-- 右側面板 -->
+        <div class="side-panel">
+            <div class="stat-card">
+                <div>得分: <span id="score" class="stat-item">0</span></div>
+                <div>圈數: <span id="laps" class="stat-item">0</span>/3</div>
+            </div>
+            
+            <div class="control-area">
+                <div id="dice-visual" class="dice-display">🎲</div>
+                <button id="dice-btn" class="btn" onclick="rollDice()">擲骰子</button>
+                <p id="status-msg" style="font-size:0.8rem; color:#666; margin-top:10px;">點擊開始移動</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 題目彈窗 -->
+    <div id="quiz-modal" class="modal">
+        <div class="modal-content">
+            <h3 id="quiz-type" style="color:var(--primary); margin-top:0;">氣象知識問答</h3>
+            <p id="question-text" style="font-weight:bold;"></p>
+            <div id="options-container"></div>
+        </div>
+    </div>
+
+    <!-- 結算彈窗 -->
+    <div id="result-modal" class="modal">
+        <div class="modal-content">
+            <h2>遊戲結束</h2>
+            <p id="final-stats"></p>
+            <button class="btn" onclick="location.reload()">再玩一次</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const questions = {
+        easy: [
+            { question: "夏天午後常出現的短暫大雨稱為什麼？", options: ["梅雨", "西北雨/雷陣雨", "春雨"], answer: 1 },
+            { question: "哪種雲看起來像棉花糖，通常代表天氣晴朗？", options: ["積雲", "卷雲", "雨層雲"], answer: 0 },
+            { question: "當氣象局發布「大雨特報」，是指 24 小時累積雨量達多少以上？", options: ["50mm", "80mm", "200mm"], answer: 1 },
+            { question: "紫外線最強的時候通常是在一天中的哪個時段？", options: ["清晨", "中午 10-14 時", "傍晚"], answer: 1 },
+            { question: "颱風最常在台灣的哪個季節出現？", options: ["春季", "夏季與秋季", "冬季"], answer: 1 }
+        ],
+        hard: [
+            { question: "大氣壓力隨高度上升會如何變化？", options: ["隨高度增加而下降", "隨高度增加而上升", "保持不變"], answer: 0 },
+            { question: "測量空氣濕度的儀器主要利用什麼原理？", options: ["乾濕球溫度差", "風杯轉速", "紅外線反射"], answer: 0 },
+            { question: "飽和水氣壓的大小主要受哪個因素影響？", options: ["風速", "氣壓", "溫度"], answer: 2 },
+            { question: "在北半球，颱風中心附近的風向是？", options: ["順時針旋入", "逆時針旋入", "垂直向上"], answer: 1 },
+            { question: "下列何者不是溫室氣體？", options: ["二氧化碳", "甲烷", "氧氣"], answer: 2 }
+        ]
+    };
+
+    const mapData = [
+        { name: "起點", type: "start" }, { name: "知識", type: "knowledge" },
+        { name: "機會", type: "chance" }, { name: "知識", type: "knowledge" },
+        { name: "知識", type: "knowledge" }, { name: "命運", type: "chance" },
+        { name: "知識", type: "knowledge" }, { name: "知識", type: "knowledge" },
+        { name: "機會", type: "chance" }, { name: "知識", type: "knowledge" },
+        { name: "知識", type: "knowledge" }, { name: "命運", type: "chance" }
+    ];
+
+    // 4x4 環狀坐標映射 (0-11)
+    const layout = [
+        {r:1, c:1}, {r:1, c:2}, {r:1, c:3}, {r:1, c:4},
+        {r:2, c:4}, {r:3, c:4}, {r:4, c:4}, {r:4, c:3},
+        {r:4, c:2}, {r:4, c:1}, {r:3, c:1}, {r:2, c:1}
+    ];
+
+    let currentPos = 0;
+    let score = 0;
+    let laps = 0;
+    let timeLeft = 180;
+    let diffSetting = 'easy';
+    let isMoving = false;
+    let timerInterval;
+
+    function initBoard() {
+        const board = document.getElementById('board');
+        mapData.forEach((cell, i) => {
+            const div = document.createElement('div');
+            div.className = `cell ${cell.type}`;
+            div.id = `cell-${i}`;
+            div.style.gridRow = layout[i].r;
+            div.style.gridColumn = layout[i].c;
+            div.innerHTML = `<div style="font-size:1.2rem">${getIcon(cell.type)}</div>${cell.name}`;
+            board.appendChild(div);
+        });
+        updatePlayerPos();
+    }
+
+    function getIcon(type) {
+        if(type==='start') return '🚩';
+        if(type==='knowledge') return '📖';
+        return '❓';
+    }
+
+    function startGame(diff) {
+        diffSetting = diff;
+        document.getElementById('difficulty-screen').style.display = 'none';
+        startTimer();
+    }
+
+    function startTimer() {
+        timerInterval = setInterval(() => {
+            timeLeft--;
+            document.getElementById('timer').innerText = timeLeft;
+            if (timeLeft <= 0) endGame("時間到！");
+        }, 1000);
+    }
+
+    function updatePlayerPos() {
+        const player = document.getElementById('player');
+        const target = document.getElementById(`cell-${currentPos}`);
+        player.style.top = (target.offsetTop + target.offsetHeight/2 - 12) + 'px';
+        player.style.left = (target.offsetLeft + target.offsetWidth/2 - 12) + 'px';
+    }
+
+    async function rollDice() {
+        if (isMoving) return;
+        isMoving = true;
+        const btn = document.getElementById('dice-btn');
+        btn.disabled = true;
+
+        const roll = Math.floor(Math.random() * 6) + 1;
+        const diceIcons = ['⚀','⚁','⚂','⚃','⚄','⚅'];
+        document.getElementById('dice-visual').innerText = diceIcons[roll-1];
+        document.getElementById('status-msg').innerText = `前進 ${roll} 格...`;
+
+        for (let i = 0; i < roll; i++) {
+            currentPos = (currentPos + 1) % mapData.length;
+            if (currentPos === 0) {
+                laps++;
+                score += 100;
+                document.getElementById('laps').innerText = laps;
+                document.getElementById('score').innerText = score;
+                if (laps >= 3) { endGame("完成三圈挑戰！"); return; }
+            }
+            updatePlayerPos();
+            await new Promise(r => setTimeout(r, 250));
+        }
+        
+        isMoving = false;
+        handleLanding();
+    }
+
+    function handleLanding() {
+        const cell = mapData[currentPos];
+        if (cell.type !== 'start') {
+            showQuiz();
+        } else {
+            document.getElementById('dice-btn').disabled = false;
+            document.getElementById('status-msg').innerText = "回到起點，繼續加油！";
+        }
+    }
+
+    function showQuiz() {
+        const pool = questions[diffSetting];
+        const q = pool[Math.floor(Math.random() * pool.length)];
+        
+        document.getElementById('question-text').innerText = q.question;
+        const container = document.getElementById('options-container');
+        container.innerHTML = '';
+
+        q.options.forEach((opt, idx) => {
+            const b = document.createElement('button');
+            b.className = 'option-btn';
+            b.innerText = opt;
+            b.onclick = () => {
+                document.getElementById('quiz-modal').style.display = 'none';
+                if(idx === q.answer) {
+                    score += 50;
+                    alert("答對了！獲得 50 分");
+                } else {
+                    alert("可惜答錯了。");
+                }
+                document.getElementById('score').innerText = score;
+                document.getElementById('dice-btn').disabled = false;
+            };
+            container.appendChild(b);
+        });
+        document.getElementById('quiz-modal').style.display = 'flex';
+    }
+
+    function endGame(msg) {
+        clearInterval(timerInterval);
+        document.getElementById('result-modal').style.display = 'flex';
+        document.getElementById('final-stats').innerHTML = `${msg}<br>得分：${score}<br>完成圈數：${laps}`;
+    }
+
+    window.onload = initBoard;
+</script>
+
+</body>
+</html>
