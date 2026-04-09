@@ -34,6 +34,17 @@
             color: white !important;
             box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
         }
+        .external-link-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 600px;
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            border-radius: 1rem;
+            text-align: center;
+            padding: 2rem;
+        }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans">
@@ -66,14 +77,13 @@
             </a>
         </nav>
 
-        <!-- 影片展示區 (優化為 3 欄佈局) -->
+        <!-- 影片展示區 (電腦 3 欄, 平板 2 欄) -->
         <section id="videos" class="mb-24">
             <div class="flex items-center mb-10">
                 <div class="w-3 h-10 bg-blue-600 rounded-full mr-4 shadow-md"></div>
                 <h2 class="text-3xl font-bold">精彩短片系列</h2>
             </div>
             
-            <!-- Grid 設定：寬螢幕 3 欄, 平板 2 欄, 手機 1 欄 -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 <!-- 影片 1 -->
                 <div class="glass-card p-5 rounded-3xl shadow-md border-t-4 border-t-blue-500 transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
@@ -84,7 +94,6 @@
                     <div class="video-container mb-4">
                         <iframe src="https://www.youtube.com/embed/P4dW_19bYY0" frameborder="0" allowfullscreen></iframe>
                     </div>
-                    <p class="text-gray-600 text-sm leading-relaxed">探索基隆地標海港大樓與氣象站之間的深厚淵源，見證建築與科學的交會。</p>
                 </div>
 
                 <!-- 影片 2 -->
@@ -96,7 +105,6 @@
                     <div class="video-container mb-4">
                         <iframe src="https://www.youtube.com/embed/J8eBHAENo08" frameborder="0" allowfullscreen></iframe>
                     </div>
-                    <p class="text-gray-600 text-sm leading-relaxed">回首八十年，細數氣象站地址的變遷歷史，每一處足跡都承載著觀測數據的重任。</p>
                 </div>
 
                 <!-- 影片 3 -->
@@ -108,7 +116,6 @@
                     <div class="video-container mb-4">
                         <iframe src="https://www.youtube.com/embed/SWPl93uGu_g" frameborder="0" allowfullscreen></iframe>
                     </div>
-                    <p class="text-gray-600 text-sm leading-relaxed">走進氣象站的核心區域，認識各式觀測儀器如何捕捉風、雨、溫度的微妙變化。</p>
                 </div>
 
                 <!-- 影片 4 -->
@@ -120,7 +127,6 @@
                     <div class="video-container mb-4">
                         <iframe src="https://www.youtube.com/embed/5LH1z691JMs" frameborder="0" allowfullscreen></iframe>
                     </div>
-                    <p class="text-gray-600 text-sm leading-relaxed">解讀基隆獨特的雨港氣候與自然界律動，觀察環境如何隨著季節在八十年間交替。</p>
                 </div>
 
                 <!-- 影片 5 -->
@@ -132,14 +138,13 @@
                     <div class="video-container mb-4">
                         <iframe src="https://www.youtube.com/embed/1zDzesz4AIk" frameborder="0" allowfullscreen></iframe>
                     </div>
-                    <p class="text-gray-600 text-sm leading-relaxed">展望未來，隨科技進步，氣象服務如何與數位時代接軌，提供更精準、貼心的預報與服務。</p>
                 </div>
             </div>
         </section>
 
-        <!-- 遊戲互動區 (新增多遊戲切換) -->
+        <!-- 遊戲互動區 -->
         <section id="game" class="mb-24">
-            <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between mb-8 gap-4">
                 <div class="flex items-center">
                     <div class="w-3 h-10 bg-green-500 rounded-full mr-4 shadow-md"></div>
                     <h2 class="text-3xl font-bold">互動遊戲大本營</h2>
@@ -154,24 +159,42 @@
                 </div>
             </div>
 
-            <div class="glass-card p-2 rounded-3xl shadow-2xl overflow-hidden relative" style="min-height: 650px;">
-                <div id="game-loader" class="absolute inset-0 flex items-center justify-center bg-white z-10 transition-opacity duration-500 opacity-0 pointer-events-none">
+            <div class="glass-card p-2 rounded-3xl shadow-2xl overflow-hidden relative" style="min-height: 600px;">
+                <!-- 嵌入區 -->
+                <div id="iframe-wrapper" class="w-full h-[600px]">
+                    <iframe id="game-viewport" src="https://keelungcwa.github.io/keelungintro/game.html" class="w-full h-full border-0 rounded-2xl shadow-inner" title="Weather Game"></iframe>
+                </div>
+
+                <!-- 外連引導區 (預設隱藏) -->
+                <div id="external-wrapper" class="hidden w-full h-[600px] flex items-center justify-center bg-slate-100 rounded-2xl">
+                   <div class="text-center p-8">
+                       <div class="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6 text-3xl shadow-inner">
+                           <i class="fas fa-external-link-alt"></i>
+                       </div>
+                       <h3 id="ext-title" class="text-2xl font-bold text-slate-800 mb-4">準備好開始遊戲了嗎？</h3>
+                       <p id="ext-desc" class="text-slate-500 mb-8 max-w-md mx-auto">由於氣象署外部資源安全限制，請點擊下方按鈕開啟新視窗進行遊戲。</p>
+                       <a id="ext-link" href="#" target="_blank" class="inline-flex items-center px-8 py-4 bg-green-600 text-white rounded-xl font-bold text-lg hover:bg-green-700 transition-all shadow-lg hover:shadow-green-200 transform hover:-translate-y-1">
+                           立即前往遊戲 <i class="fas fa-rocket ml-2"></i>
+                       </a>
+                   </div>
+                </div>
+
+                <!-- Loader -->
+                <div id="game-loader" class="absolute inset-0 flex items-center justify-center bg-white z-10 transition-opacity duration-300 opacity-0 pointer-events-none">
                     <div class="text-center">
                         <i class="fas fa-circle-notch fa-spin text-4xl text-green-500 mb-4"></i>
-                        <p class="text-gray-500 font-medium">遊戲載入中...</p>
+                        <p class="text-gray-500">切換中...</p>
                     </div>
                 </div>
-                
-                <iframe id="game-viewport" src="https://keelungcwa.github.io/keelungintro/game.html" class="w-full h-[650px] border-0 rounded-2xl shadow-inner" title="Weather Game"></iframe>
             </div>
 
-            <div class="mt-8 p-6 bg-green-50 rounded-2xl border border-green-200 flex items-start">
-                <div class="bg-green-500 text-white p-3 rounded-xl mr-4 shadow-lg">
+            <div class="mt-8 p-6 bg-white rounded-2xl border border-slate-200 flex items-start shadow-sm">
+                <div class="bg-green-500 text-white p-3 rounded-xl mr-4 shadow-md">
                     <i class="fas fa-info-circle text-xl"></i>
                 </div>
                 <div>
-                    <h4 id="game-title-desc" class="font-bold text-green-800 mb-1 text-lg">玩法說明：基隆站：氣象大富翁</h4>
-                    <p id="game-text-desc" class="text-green-700">點擊畫面開始互動。透過趣味大富翁地圖，挑戰您對基隆氣象站 80 年歷史與科學知識的瞭解程度！</p>
+                    <h4 id="game-title-desc" class="font-bold text-slate-800 mb-1 text-lg">玩法說明：基隆站：氣象大富翁</h4>
+                    <p id="game-text-desc" class="text-slate-600 leading-relaxed">透過趣味大富翁地圖，挑戰您對基隆氣象站 80 年歷史與科學知識的瞭解程度！</p>
                 </div>
             </div>
         </section>
@@ -186,64 +209,75 @@
                 <a href="https://www.facebook.com/KeelungWeatherStation" target="_blank" class="hover:text-blue-600 transition-colors"><i class="fab fa-facebook"></i></a>
             </div>
             <p class="text-xl font-semibold text-slate-100 mb-2">基隆氣象站 80 週年紀念展覽</p>
-            <p class="mb-6 opacity-70">數位內容導覽系統 v2.0</p>
+            <p class="mb-6 opacity-70">數位內容導覽系統 v2.1</p>
             <div class="h-px bg-slate-800 w-full mb-8 opacity-50"></div>
-            <p class="text-xs opacity-50 tracking-widest uppercase">
-                &copy; 2026 Keelung Meteorological Station. All Rights Reserved.
-            </p>
+            <p class="text-xs opacity-50 tracking-widest uppercase">&copy; 2026 Keelung Meteorological Station.</p>
         </div>
     </footer>
 
-    <!-- 返回頂部 -->
-    <div class="fixed bottom-8 right-8 z-50">
-        <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="w-14 h-14 bg-blue-600 text-white rounded-full shadow-2xl flex items-center justify-center hover:bg-blue-700 active:scale-95 transition-all duration-300">
-            <i class="fas fa-arrow-up text-xl"></i>
-        </button>
-    </div>
-
     <script>
-        // 遊戲資料設定
         const games = [
             {
                 title: "基隆站：氣象大富翁",
                 url: "https://keelungcwa.github.io/keelungintro/game.html",
-                desc: "透過趣味大富翁地圖，挑戰您對基隆氣象站 80 年歷史與科學知識的瞭解程度！"
+                desc: "透過趣味大富翁地圖，挑戰您對基隆氣象站 80 年歷史與科學知識的瞭解程度！",
+                isExternal: false // 自己的 GitHub 可以嵌入
             },
             {
                 title: "雲寶的生日派對",
-                url: "https://pweb.cwa.gov.tw/PopularScience/games/game4/contents/", // 請替換實際網址
-                desc: "與氣象署吉祥物雲寶一起慶祝生日，在派對互動中學習氣象小常識！"
+                url: "https://pweb.cwa.gov.tw/PopularScience/games/game4/contents/",
+                desc: "與氣象署吉祥物雲寶一起慶祝生日，在派對互動中學習氣象小常識！",
+                isExternal: true // 氣象署官方禁止嵌入，改用外連
             },
             {
                 title: "拯救記憶大挑戰",
-                url: "https://pweb.cwa.gov.tw/PopularScience/games/game3/index.html", // 請替換實際網址
-                desc: "快來挑戰腦力拼圖，拼湊出生活有氣象輪廓！"
+                url: "https://pweb.cwa.gov.tw/PopularScience/games/game3/index.html",
+                desc: "快來挑戰腦力拼圖，拼湊出生活有氣象輪廓！",
+                isExternal: true
             },
             {
                 title: "熱氣球大冒險",
-                url: "https://pweb.cwa.gov.tw/PopularScience/games/game1/index.html", // 請替換實際網址
-                desc: "操控探空氣球飛向高空，收集大氣數據並避開雷雨雲，體驗高空觀測的魅力！"
+                url: "https://pweb.cwa.gov.tw/PopularScience/games/game1/index.html",
+                desc: "操控探空氣球飛向高空，收集大氣數據並避開雷雨雲，體驗高空觀測的魅力！",
+                isExternal: true
             },
             {
                 title: "雲寶戰鬥大本營",
-                url: "https://pweb.cwa.gov.tw/PopularScience/games/3Dgame2/index_map.html", // 請替換實際網址
-                desc: "拿起觀測設備，與極端天氣小怪獸對抗，守護觀測平安！"
+                url: "https://pweb.cwa.gov.tw/PopularScience/games/3Dgame2/index_map.html",
+                desc: "拿起觀測設備，與極端天氣小怪獸對抗，守護觀測平安！",
+                isExternal: true
             }
         ];
 
         function switchGame(index) {
             const loader = document.getElementById('game-loader');
+            const iframeWrapper = document.getElementById('iframe-wrapper');
+            const externalWrapper = document.getElementById('external-wrapper');
             const iframe = document.getElementById('game-viewport');
             const titleDesc = document.getElementById('game-title-desc');
             const textDesc = document.getElementById('game-text-desc');
             
+            const game = games[index];
+
             // 顯示載入動畫
             loader.classList.remove('opacity-0', 'pointer-events-none');
             
-            // 切換連結與文字
-            iframe.src = games[index].url;
-            titleDesc.innerText = "玩法說明：" + games[index].title;
-            textDesc.innerText = games[index].desc;
+            // 更新文字內容
+            titleDesc.innerText = "玩法說明：" + game.title;
+            textDesc.innerText = game.desc;
+
+            // 判斷是否為外連
+            if (game.isExternal) {
+                iframeWrapper.classList.add('hidden');
+                externalWrapper.classList.remove('hidden');
+                document.getElementById('ext-title').innerText = "即將開始：" + game.title;
+                document.getElementById('ext-link').href = game.url;
+                iframe.src = "about:blank"; // 清空 iframe
+            } else {
+                externalWrapper.classList.add('hidden');
+                iframeWrapper.classList.remove('hidden');
+                iframe.src = game.url;
+            }
 
             // 切換按鈕樣式
             for (let i = 0; i < 5; i++) {
@@ -257,17 +291,11 @@
                 }
             }
 
-            // 模擬載入完成 (實際可用 iframe onload 事件)
-            iframe.onload = function() {
-                loader.classList.add('opacity-0', 'pointer-events-none');
-            };
-            
-            // 安全機制：3秒後強制關閉載入畫面 (防死連結)
+            // 動畫與載入控制
             setTimeout(() => {
                 loader.classList.add('opacity-0', 'pointer-events-none');
-            }, 3000);
+            }, 600);
         }
     </script>
-
 </body>
 </html>
