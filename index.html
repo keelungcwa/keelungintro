@@ -3,298 +3,198 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>基隆氣象站 80 週年數位導覽</title>
+    <title>基隆氣象站 80 周年｜雨港海韻．氣象八十</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        .video-container {
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            min-height: 100vh;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 1.5rem;
+        }
+        .video-wrapper {
             position: relative;
-            padding-bottom: 56.25%; /* 16:9 ratio */
+            padding-bottom: 56.25%;
             height: 0;
             overflow: hidden;
+            border-radius: 1rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
         }
-        .video-container iframe {
+        .video-wrapper iframe {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            border-radius: 0.75rem;
         }
-        .glass-card {
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+        .nav-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        html {
-            scroll-behavior: smooth;
+        .nav-card:hover {
+            transform: translateY(-4px);
+            background-color: white;
+            box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.05);
         }
-        .game-tab-active {
-            background-color: #22c55e !important;
+        .active-tab {
+            background: #0369a1 !important;
             color: white !important;
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            box-shadow: 0 4px 12px rgba(3, 105, 161, 0.2);
         }
-        .external-link-card {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 600px;
-            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
-            border-radius: 1rem;
-            text-align: center;
-            padding: 2rem;
+        .active-video-btn {
+            border-color: #0ea5e9 !important;
+            background-color: #f0f9ff !important;
         }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 font-sans">
+<body class="text-slate-800 p-4 md:p-12">
 
-    <!-- Header -->
-    <header class="bg-blue-800 text-white py-12 px-4 shadow-lg text-center relative overflow-hidden">
-        <div class="relative z-10">
-            <h1 class="text-3xl md:text-5xl font-bold mb-3 tracking-wider">基隆氣象站 80 週年</h1>
-            <p class="text-blue-100 opacity-90 text-lg md:text-xl font-light">時光交錯八十載：數位導覽互動區</p>
+    <div class="max-w-6xl mx-auto">
+        <!-- Header -->
+        <header class="flex flex-col md:flex-row items-center justify-between mb-12 gap-6">
+            <div class="text-center md:text-left">
+                <h1 class="text-3xl md:text-4xl font-bold text-sky-900 tracking-tight">基隆氣象站 <span class="text-sky-600">80</span> 週年</h1>
+                <p class="text-sky-700/60 font-medium mt-1 text-lg">雨港海韻．氣象八十 — 雲端導覽</p>
+            </div>
+            <nav class="flex gap-3 p-1.5 bg-sky-200/30 rounded-2xl">
+                <button onclick="switchContent('video-section')" class="px-8 py-2.5 rounded-xl font-bold transition-all active-tab" id="tab-video">
+                    影像故事
+                </button>
+                <button onclick="switchContent('quiz-section')" class="px-8 py-2.5 rounded-xl font-bold transition-all text-sky-800 hover:bg-white/50" id="tab-quiz">
+                    知識挑戰
+                </button>
+            </nav>
+        </header>
+
+        <main>
+            <!-- Video Section -->
+            <section id="video-section" class="space-y-8">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                    
+                    <!-- Main Video Player -->
+                    <div class="lg:col-span-8 glass-panel p-4 shadow-xl">
+                        <div class="video-wrapper">
+                            <iframe id="video-iframe" src="https://www.youtube.com/embed/5F_0lT4B_O0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                        </div>
+                    </div>
+
+                    <!-- Video Navigation & Info -->
+                    <div class="lg:col-span-4 space-y-6">
+                        <div class="glass-panel p-8">
+                            <h2 class="text-2xl font-bold mb-4 text-sky-900" id="video-title">海港大樓與搬遷史</h2>
+                            <p class="text-slate-600 leading-relaxed text-lg" id="video-desc">
+                                從氣勢恢宏的海港大樓出發，回顧氣象站如何跨越時空遷徙至現址，這段旅程承載了基隆港口的風雨記憶。
+                            </p>
+                        </div>
+
+                        <div class="grid grid-cols-1 gap-4">
+                            <button onclick="loadVideo(0)" id="btn-0" class="nav-card p-4 rounded-2xl bg-white/40 flex items-center gap-4 border-2 border-transparent active-video-btn">
+                                <div class="bg-sky-100 text-sky-600 w-12 h-12 rounded-xl flex items-center justify-center text-xl">
+                                    <i class="fa-solid fa-landmark"></i>
+                                </div>
+                                <div class="text-left">
+                                    <p class="font-bold">海港大樓與搬遷史</p>
+                                    <p class="text-xs text-slate-400">時光倒流 80 年</p>
+                                </div>
+                            </button>
+                            <button onclick="loadVideo(1)" id="btn-1" class="nav-card p-4 rounded-2xl bg-white/40 flex items-center gap-4 border-2 border-transparent">
+                                <div class="bg-sky-100 text-sky-600 w-12 h-12 rounded-xl flex items-center justify-center text-xl">
+                                    <i class="fa-solid fa-satellite-dish"></i>
+                                </div>
+                                <div class="text-left">
+                                    <p class="font-bold">觀測任務與地方服務</p>
+                                    <p class="text-xs text-slate-400">守護基隆的每一天</p>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Quiz Section (Hidden by default) -->
+            <section id="quiz-section" class="hidden glass-panel p-12 min-h-[500px] flex flex-col items-center justify-center text-center shadow-xl">
+                <div class="max-w-xl">
+                    <div class="w-20 h-20 bg-sky-100 text-sky-600 rounded-2xl flex items-center justify-center text-3xl mx-auto mb-8 transform rotate-3 shadow-sm">
+                        <i class="fa-solid fa-puzzle-piece"></i>
+                    </div>
+                    <h2 class="text-3xl font-bold text-sky-900 mb-6">看過影片了嗎？</h2>
+                    <p class="text-xl text-slate-500 mb-10 leading-relaxed">
+                        我們準備了幾個關於基隆氣象站的小測驗，<br>完成後您就是基隆站的頭號粉絲！
+                    </p>
+                    <a href="https://virgonelson.github.io/keelung_quiz/" target="_blank" class="inline-flex items-center gap-4 bg-sky-600 hover:bg-sky-700 text-white px-10 py-5 rounded-2xl text-xl font-bold transition-all hover:shadow-2xl hover:shadow-sky-300 active:scale-95">
+                        開始挑戰 <i class="fa-solid fa-chevron-right"></i>
+                    </a>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="mt-20 pt-8 border-t border-sky-200 text-center text-sky-900/40 text-sm">
+            <p>中央氣象署 基隆氣象站 80 周年</p>
         </div>
-        <div class="absolute -top-20 -right-20 w-64 h-64 bg-blue-700 rounded-full opacity-20"></div>
-        <div class="absolute -bottom-10 -left-10 w-48 h-48 bg-blue-900 rounded-full opacity-30"></div>
-    </header>
-
-    <main class="max-w-7xl mx-auto p-4 md:p-8">
-        
-        <!-- 快速導覽選單 -->
-        <nav class="flex flex-wrap justify-center gap-4 mb-16">
-            <a href="#videos" class="px-6 py-3 bg-white rounded-full shadow-sm border border-blue-100 hover:bg-blue-50 hover:border-blue-300 transition-all duration-300 transform hover:-translate-y-1">
-                <i class="fas fa-video mr-2 text-blue-600"></i>影音專區
-            </a>
-            <a href="#game" class="px-6 py-3 bg-white rounded-full shadow-sm border border-green-100 hover:bg-green-50 hover:border-green-300 transition-all duration-300 transform hover:-translate-y-1">
-                <i class="fas fa-gamepad mr-2 text-green-600"></i>互動遊戲
-            </a>
-            <a href="https://keelungcwa.github.io/keelungcwa" target="_blank" class="px-6 py-3 bg-white rounded-full shadow-sm border border-gray-100 hover:bg-gray-50 transition-all duration-300 transform hover:-translate-y-1">
-                <i class="fas fa-building mr-2 text-gray-500"></i>基隆站網頁
-            </a>
-            <a href="https://www.facebook.com/KeelungWeatherStation" target="_blank" class="px-6 py-3 bg-white rounded-full shadow-sm border border-blue-200 hover:bg-blue-600 hover:text-white transition-all duration-300 transform hover:-translate-y-1">
-                <i class="fab fa-facebook mr-2 text-blue-500 hover:text-white"></i>本站 FB
-            </a>
-        </nav>
-
-        <!-- 影片展示區 (電腦 3 欄, 平板 2 欄) -->
-        <section id="videos" class="mb-24">
-            <div class="flex items-center mb-10">
-                <div class="w-3 h-10 bg-blue-600 rounded-full mr-4 shadow-md"></div>
-                <h2 class="text-3xl font-bold">精彩短片系列</h2>
-            </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <!-- 影片 1 -->
-                <div class="glass-card p-5 rounded-3xl shadow-md border-t-4 border-t-blue-500 transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
-                    <h3 class="font-bold mb-4 text-lg flex items-center">
-                        <span class="bg-blue-100 text-blue-700 w-8 h-8 rounded-full flex items-center justify-center mr-3 text-sm">01</span>
-                        海港大樓與氣象站
-                    </h3>
-                    <div class="video-container mb-4">
-                        <iframe src="https://www.youtube.com/embed/P4dW_19bYY0" frameborder="0" allowfullscreen></iframe>
-                    </div>
-                </div>
-
-                <!-- 影片 2 -->
-                <div class="glass-card p-5 rounded-3xl shadow-md border-t-4 border-t-blue-500 transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
-                    <h3 class="font-bold mb-4 text-lg flex items-center">
-                        <span class="bg-blue-100 text-blue-700 w-8 h-8 rounded-full flex items-center justify-center mr-3 text-sm">02</span>
-                        氣象站站址歷史
-                    </h3>
-                    <div class="video-container mb-4">
-                        <iframe src="https://www.youtube.com/embed/J8eBHAENo08" frameborder="0" allowfullscreen></iframe>
-                    </div>
-                </div>
-
-                <!-- 影片 3 -->
-                <div class="glass-card p-5 rounded-3xl shadow-md border-t-4 border-t-blue-500 transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
-                    <h3 class="font-bold mb-4 text-lg flex items-center">
-                        <span class="bg-blue-100 text-blue-700 w-8 h-8 rounded-full flex items-center justify-center mr-3 text-sm">03</span>
-                        觀測坪及儀器
-                    </h3>
-                    <div class="video-container mb-4">
-                        <iframe src="https://www.youtube.com/embed/SWPl93uGu_g" frameborder="0" allowfullscreen></iframe>
-                    </div>
-                </div>
-
-                <!-- 影片 4 -->
-                <div class="glass-card p-5 rounded-3xl shadow-md border-t-4 border-t-blue-500 transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
-                    <h3 class="font-bold mb-4 text-lg flex items-center">
-                        <span class="bg-blue-100 text-blue-700 w-8 h-8 rounded-full flex items-center justify-center mr-3 text-sm">04</span>
-                        氣候及物候特性
-                    </h3>
-                    <div class="video-container mb-4">
-                        <iframe src="https://www.youtube.com/embed/5LH1z691JMs" frameborder="0" allowfullscreen></iframe>
-                    </div>
-                </div>
-
-                <!-- 影片 5 -->
-                <div class="glass-card p-5 rounded-3xl shadow-md border-t-4 border-t-blue-500 transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
-                    <h3 class="font-bold mb-4 text-lg flex items-center">
-                        <span class="bg-blue-100 text-blue-700 w-8 h-8 rounded-full flex items-center justify-center mr-3 text-sm">05</span>
-                        氣象服務展望
-                    </h3>
-                    <div class="video-container mb-4">
-                        <iframe src="https://www.youtube.com/embed/1zDzesz4AIk" frameborder="0" allowfullscreen></iframe>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- 遊戲互動區 -->
-        <section id="game" class="mb-24">
-            <div class="flex flex-col lg:flex-row lg:items-center justify-between mb-8 gap-4">
-                <div class="flex items-center">
-                    <div class="w-3 h-10 bg-green-500 rounded-full mr-4 shadow-md"></div>
-                    <h2 class="text-3xl font-bold">互動遊戲大本營</h2>
-                </div>
-                <!-- 遊戲切換標籤 -->
-                <div class="flex flex-wrap gap-2">
-                    <button onclick="switchGame(0)" id="btn-0" class="game-tab-active px-4 py-2 rounded-lg bg-white border border-green-200 text-sm font-medium transition-all">基隆站：氣象大富翁</button>
-                    <button onclick="switchGame(1)" id="btn-1" class="px-4 py-2 rounded-lg bg-white border border-green-200 text-sm font-medium hover:bg-green-50 transition-all text-slate-600">雲寶的生日派對</button>
-                    <button onclick="switchGame(2)" id="btn-2" class="px-4 py-2 rounded-lg bg-white border border-green-200 text-sm font-medium hover:bg-green-50 transition-all text-slate-600">拯救記憶大挑戰</button>
-                    <button onclick="switchGame(3)" id="btn-3" class="px-4 py-2 rounded-lg bg-white border border-green-200 text-sm font-medium hover:bg-green-50 transition-all text-slate-600">熱氣球大冒險</button>
-                    <button onclick="switchGame(4)" id="btn-4" class="px-4 py-2 rounded-lg bg-white border border-green-200 text-sm font-medium hover:bg-green-50 transition-all text-slate-600">雲寶戰鬥大本營</button>
-                </div>
-            </div>
-
-            <div class="glass-card p-2 rounded-3xl shadow-2xl overflow-hidden relative" style="min-height: 600px;">
-                <!-- 嵌入區 -->
-                <div id="iframe-wrapper" class="w-full h-[600px]">
-                    <iframe id="game-viewport" src="https://keelungcwa.github.io/keelungintro/game.html" class="w-full h-full border-0 rounded-2xl shadow-inner" title="Weather Game"></iframe>
-                </div>
-
-                <!-- 外連引導區 (預設隱藏) -->
-                <div id="external-wrapper" class="hidden w-full h-[600px] flex items-center justify-center bg-slate-100 rounded-2xl">
-                   <div class="text-center p-8">
-                       <div class="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6 text-3xl shadow-inner">
-                           <i class="fas fa-external-link-alt"></i>
-                       </div>
-                       <h3 id="ext-title" class="text-2xl font-bold text-slate-800 mb-4">準備好開始遊戲了嗎？</h3>
-                       <p id="ext-desc" class="text-slate-500 mb-8 max-w-md mx-auto">由於氣象署外部資源安全限制，請點擊下方按鈕開啟新視窗進行遊戲。</p>
-                       <a id="ext-link" href="#" target="_blank" class="inline-flex items-center px-8 py-4 bg-green-600 text-white rounded-xl font-bold text-lg hover:bg-green-700 transition-all shadow-lg hover:shadow-green-200 transform hover:-translate-y-1">
-                           立即前往遊戲 <i class="fas fa-rocket ml-2"></i>
-                       </a>
-                   </div>
-                </div>
-
-                <!-- Loader -->
-                <div id="game-loader" class="absolute inset-0 flex items-center justify-center bg-white z-10 transition-opacity duration-300 opacity-0 pointer-events-none">
-                    <div class="text-center">
-                        <i class="fas fa-circle-notch fa-spin text-4xl text-green-500 mb-4"></i>
-                        <p class="text-gray-500">切換中...</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="mt-8 p-6 bg-white rounded-2xl border border-slate-200 flex items-start shadow-sm">
-                <div class="bg-green-500 text-white p-3 rounded-xl mr-4 shadow-md">
-                    <i class="fas fa-info-circle text-xl"></i>
-                </div>
-                <div>
-                    <h4 id="game-title-desc" class="font-bold text-slate-800 mb-1 text-lg">玩法說明：基隆站：氣象大富翁</h4>
-                    <p id="game-text-desc" class="text-slate-600 leading-relaxed">透過趣味大富翁地圖，挑戰您對基隆氣象站 80 年歷史與科學知識的瞭解程度！</p>
-                </div>
-            </div>
-        </section>
-
-    </main>
-
-    <footer class="bg-slate-900 text-slate-400 py-16 px-4 text-center mt-20">
-        <div class="max-w-4xl mx-auto">
-            <div class="flex justify-center gap-8 mb-8 text-3xl">
-                <a href="https://www.youtube.com/@cwbkeelung5469" target="_blank" class="hover:text-red-500 transition-colors"><i class="fab fa-youtube"></i></a>
-                <a href="mailto:keelung@cwa.gov.tw" class="hover:text-blue-400 transition-colors"><i class="fas fa-envelope"></i></a>
-                <a href="https://www.facebook.com/KeelungWeatherStation" target="_blank" class="hover:text-blue-600 transition-colors"><i class="fab fa-facebook"></i></a>
-            </div>
-            <p class="text-xl font-semibold text-slate-100 mb-2">基隆氣象站 80 週年紀念展覽</p>
-            <p class="mb-6 opacity-70">數位內容導覽系統 v2.1</p>
-            <div class="h-px bg-slate-800 w-full mb-8 opacity-50"></div>
-            <p class="text-xs opacity-50 tracking-widest uppercase">&copy; 2026 Keelung Meteorological Station.</p>
-        </div>
-    </footer>
+    </div>
 
     <script>
-        const games = [
+        const videoData = [
             {
-                title: "基隆站：氣象大富翁",
-                url: "https://keelungcwa.github.io/keelungintro/game.html",
-                desc: "透過趣味大富翁地圖，挑戰您對基隆氣象站 80 年歷史與科學知識的瞭解程度！",
-                isExternal: false // 自己的 GitHub 可以嵌入
+                title: "海港大樓與搬遷史",
+                desc: "從氣勢恢宏的海港大樓出發，回顧氣象站如何跨越時空遷徙至現址，這段旅程承載了基隆港口的風雨記憶。",
+                url: "https://www.youtube.com/embed/AjnE1zQXuzM"
             },
             {
-                title: "雲寶的生日派對",
-                url: "https://pweb.cwa.gov.tw/PopularScience/games/game4/contents/",
-                desc: "與氣象署吉祥物雲寶一起慶祝生日，在派對互動中學習氣象小常識！",
-                isExternal: true // 氣象署官方禁止嵌入，改用外連
-            },
-            {
-                title: "拯救記憶大挑戰",
-                url: "https://pweb.cwa.gov.tw/PopularScience/games/game3/index.html",
-                desc: "快來挑戰腦力拼圖，拼湊出生活有氣象輪廓！",
-                isExternal: true
-            },
-            {
-                title: "熱氣球大冒險",
-                url: "https://pweb.cwa.gov.tw/PopularScience/games/game1/index.html",
-                desc: "操控探空氣球飛向高空，收集大氣數據並避開雷雨雲，體驗高空觀測的魅力！",
-                isExternal: true
-            },
-            {
-                title: "雲寶戰鬥大本營",
-                url: "https://pweb.cwa.gov.tw/PopularScience/games/3Dgame2/index_map.html",
-                desc: "拿起觀測設備，與極端天氣小怪獸對抗，守護觀測平安！",
-                isExternal: true
+                title: "觀測任務與地方服務",
+                desc: "不只是觀測風雨。深入了解基隆氣象站如何提供在地化服務，從航運到民生，守護港都的每一天。",
+                url: "https://www.youtube.com/embed/MTP8U9uizlI"
             }
         ];
 
-        function switchGame(index) {
-            const loader = document.getElementById('game-loader');
-            const iframeWrapper = document.getElementById('iframe-wrapper');
-            const externalWrapper = document.getElementById('external-wrapper');
-            const iframe = document.getElementById('game-viewport');
-            const titleDesc = document.getElementById('game-title-desc');
-            const textDesc = document.getElementById('game-text-desc');
-            
-            const game = games[index];
+        function switchContent(sectionId) {
+            const videoSec = document.getElementById('video-section');
+            const quizSec = document.getElementById('quiz-section');
+            const tabVideo = document.getElementById('tab-video');
+            const tabQuiz = document.getElementById('tab-quiz');
 
-            // 顯示載入動畫
-            loader.classList.remove('opacity-0', 'pointer-events-none');
-            
-            // 更新文字內容
-            titleDesc.innerText = "玩法說明：" + game.title;
-            textDesc.innerText = game.desc;
-
-            // 判斷是否為外連
-            if (game.isExternal) {
-                iframeWrapper.classList.add('hidden');
-                externalWrapper.classList.remove('hidden');
-                document.getElementById('ext-title').innerText = "即將開始：" + game.title;
-                document.getElementById('ext-link').href = game.url;
-                iframe.src = "about:blank"; // 清空 iframe
+            if (sectionId === 'video-section') {
+                videoSec.classList.remove('hidden');
+                quizSec.classList.add('hidden');
+                tabVideo.classList.add('active-tab');
+                tabQuiz.classList.remove('active-tab');
+                tabQuiz.classList.add('text-sky-800');
             } else {
-                externalWrapper.classList.add('hidden');
-                iframeWrapper.classList.remove('hidden');
-                iframe.src = game.url;
+                videoSec.classList.add('hidden');
+                quizSec.classList.remove('hidden');
+                tabQuiz.classList.add('active-tab');
+                tabVideo.classList.remove('active-tab');
+                tabVideo.classList.add('text-sky-800');
             }
+        }
 
-            // 切換按鈕樣式
-            for (let i = 0; i < 5; i++) {
-                const btn = document.getElementById('btn-' + i);
-                if (i === index) {
-                    btn.classList.add('game-tab-active');
-                    btn.classList.remove('text-slate-600');
-                } else {
-                    btn.classList.remove('game-tab-active');
-                    btn.classList.add('text-slate-600');
-                }
-            }
+        function loadVideo(index) {
+            const video = videoData[index];
+            const iframe = document.getElementById('video-iframe');
+            const title = document.getElementById('video-title');
+            const desc = document.getElementById('video-desc');
 
-            // 動畫與載入控制
+            // 更新按鈕樣式
+            document.querySelectorAll('.nav-card').forEach((btn, i) => {
+                if (i === index) btn.classList.add('active-video-btn');
+                else btn.classList.remove('active-video-btn');
+            });
+
+            // 更新內容
+            iframe.style.opacity = '0.4';
             setTimeout(() => {
-                loader.classList.add('opacity-0', 'pointer-events-none');
-            }, 600);
+                iframe.src = video.url;
+                title.innerText = video.title;
+                desc.innerText = video.desc;
+                iframe.style.opacity = '1';
+            }, 300);
         }
     </script>
 </body>
